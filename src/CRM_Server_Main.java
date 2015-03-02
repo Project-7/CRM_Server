@@ -20,7 +20,7 @@ public class CRM_Server_Main {
     public static void main (String args[]){
         try {
             Registry reg = LocateRegistry.createRegistry(1099);
-            reg.rebind("server", new CRM_Server());
+            reg.rebind("server", new CRM_Server_Methoden());
             System.out.println("Server started");
         } catch (Exception e) {
             System.err.println("Fehler"+e.getMessage());

@@ -9,28 +9,23 @@ import java.sql.SQLException;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author MarkusH
  */
 public class CRM_Server_DB_Connection {
-    
-    Connection con = null;
-    
-    public CRM_Server_DB_Connection() throws RemoteException, SQLException {
-        
-    }
 
-     public Connection getConnection() throws SQLException {
-         try {
+    Connection con = null;
+
+    public Connection getConnection() throws SQLException {
+        try {
             System.out.println("Verbindung mit Datenbank wird hergestellt.");
             Class.forName("com.mysql.jdbc.Driver");
         } catch (Exception e) {
-            System.err.println("Treiber konnte nicht gefunden werden."+e.getMessage());
+            System.err.println("Treiber konnte nicht gefunden werden." + e.getMessage());
         }
-        return con = DriverManager.getConnection("jdbc:mysql://localhost:3306/LAeRacing", "root", "0000");
-        
-     }
-    
+        return con = DriverManager.getConnection("jdbc:mysql://localhost:3306/LAeRacing", "root", "");
+
+    }
+
 }
