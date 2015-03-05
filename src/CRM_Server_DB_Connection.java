@@ -1,5 +1,4 @@
 
-import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -24,7 +23,7 @@ public class CRM_Server_DB_Connection {
         } catch (Exception e) {
             System.err.println("Treiber konnte nicht gefunden werden." + e.getMessage());
         }
-        return con = DriverManager.getConnection("jdbc:mysql://localhost:3306/LAeRacing", "root", "");
+        return con = DriverManager.getConnection("jdbc:mysql://localhost:3306/LAeRacing", "root", "0000");
 
     }
 
