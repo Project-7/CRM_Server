@@ -69,7 +69,7 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
             Connection con = c.getConnection();
             ArrayList <Mitglied> mitglieder = new ArrayList <Mitglied>();
             
-            if(args.length==0){
+            if(args.length==0){ //wenn keine Auswahl getroffen wird im Client, werden alle Mitglieder ohne Einschränkung ausgegeben
                 String abfrage = "SELECT * FROM Mitglied;";
                 PreparedStatement pstmt = con.prepareStatement(abfrage);
                 ResultSet rs = pstmt.executeQuery();
@@ -96,6 +96,35 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
                 System.out.println(m.getEmail());
                 System.out.println(m.getOrt());
                 mitglieder.add(m);
+            }
+            }if(args.length==2){ //wenn Client ein Attribut abfrägt
+                String abfrage = "SELECT * FROM Mitglied WHERE "+args[0]+" = '"+args[1]+"';";;
+                PreparedStatement pstmt = con.prepareStatement(abfrage);
+                ResultSet rs = pstmt.executeQuery();
+                while (rs.next()){
+                int mitglID = rs.getInt(1);
+                String vorname = rs.getString(2);
+                String name = rs.getString(3);
+                String telefonnr = rs.getString(4);
+                String email = rs.getString(5);
+                String strasse_Hsnr = rs.getString(6);
+                int plz = rs.getInt(7);
+                String ort = rs.getString(8);
+                int angemeldet = rs.getInt(9);
+                String studiumGenerale = rs.getString(10);
+                String email_eRacing = rs.getString(11);
+                String fuehrerschein = rs.getString(12);
+                String vermerk = rs.getString(13);
+                int werkstattregeln = rs.getInt(14);
+                int serverzugang = rs.getInt(15);
+                String staatsangehoerigkeit = rs.getString(16);
+                int foto_vorhanden = rs.getInt(17);
+                String Position = rs.getString(18);
+                Mitglied m = new Mitglied(mitglID, vorname,  name,  telefonnr,  email,  strasse_Hsnr,  plz,  ort, angemeldet,  studiumGenerale,  email_eRacing,  fuehrerschein,  vermerk,  werkstattregeln,  serverzugang,  staatsangehoerigkeit,  foto_vorhanden, Position);
+                System.out.println(m.getEmail());
+                //System.out.println(m.getOrt());
+                mitglieder.add(m);
+                //SELECT Geburtsdatum FROM Geburtsdaten WHERE mitgliederID = mitglID
             }
             }
             System.out.println("Abfrage ausgeführt");
