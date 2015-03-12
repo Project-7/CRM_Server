@@ -97,7 +97,7 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
                 System.out.println(m.getOrt());
                 mitglieder.add(m);
             }
-            }if(args.length==2){ //wenn Client ein Attribut abfrägt
+            }if(args.length==2){ //wenn Client EIN Attribut abfrägt
                 String abfrage = "SELECT * FROM Mitglied WHERE "+args[0]+" = '"+args[1]+"';";;
                 PreparedStatement pstmt = con.prepareStatement(abfrage);
                 ResultSet rs = pstmt.executeQuery();
@@ -149,8 +149,19 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
     }
 
     @Override
-    public String deleteMitglied(Mitglied m) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String deleteMitglied(int mID) throws RemoteException {
+        try {
+            CRM_Server_DB_Connection c = new CRM_Server_DB_Connection();
+            Connection con = c.getConnection();
+            Statement stmt = con.createStatement();
+            stmt.executeUpdate("UPDATE Mitglied SET angemeldet=null AND studiumGenerale=null AND  email_eRacing=null AND  fuehrerschein=null AND vermerk=null AND werkstattregeln=null AND serverzugang=null AND staatsangehoerigkeit=null AND foto_vorhanden=null AND Position=null WHERE mitgliederID="+mID+";");  
+            System.out.println("Datensatz erfolgreich gelöscht.");
+            stmt.executeUpdate("UPDATE Mitgliedsstatus SET austrittsdatum = currentDate WHERE statusID="+mID+";");
+            System.out.println("Der Mitgliedsstatus wurde erfolgreich aktualisiert.");
+        } catch (SQLException e) {
+            System.err.println("Fehler: " + e);
+        }
+        return "Mitglied erfolgreich gelöscht!";
     }
 
 }
