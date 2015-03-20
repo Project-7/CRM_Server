@@ -25,12 +25,20 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
     }
 
     @Override
-    public String insertMitglied(Mitglied m) throws RemoteException {
+    public String insertMitglied(Mitglied m, Geburtsdaten g) throws RemoteException {
         try {
             CRM_Server_DB_Connection c = new CRM_Server_DB_Connection();
             Connection con = c.getConnection();
             Statement stmt = con.createStatement();
+        
             stmt.executeUpdate("INSERT INTO Mitglied (vorname,  name,  telefonnr,  email,  Strasse_HsNr,  plz,  ort, angemeldet,  studiumGenerale,  email_eRacing,  fuehrerschein,  vermerk,  werkstattregeln,  serverzugang,  staatsangehoerigkeit,  foto_vorhanden, Position) VALUES ('" + m.getVorname() + "','" + m.getName() + "', '" + m.getTelefonnr() + "', '" + m.getEmail() + "', '" + m.getStrasse_Hsnr() + "', '" + m.getPlz() + "', '" + m.getOrt() + "', '" + m.isAngemeldet() + "', '" + m.getStudiumGenerale() + "', '" + m.getEmail_eRacing() + "', '" + m.getFuehrerschein() + "', '" + m.getVermerk() + "', '" + m.isWerkstattregeln() + "', '" + m.isServerzugang() + "', '" + m.getStaatsangehoerigkeit() + "', '" + m.isFoto_vorhanden() + "', '" + m.getPosition() + "')");
+            String selectID = "SELECT MitgliederID FROM Mitglied WHERE vorname= '" + m.getVorname() + "' AND  name= '" + m.getName() + "' AND  TelefonNr= '" + m.getTelefonnr() + "';";
+            ResultSet rs = stmt.executeQuery(selectID);
+            int mitglID = 0;
+                while (rs.next()) {
+                    mitglID = rs.getInt(1);
+                }
+            stmt.executeUpdate("INSERT INTO Geburtsdaten (GeburtsID, Geburtsdatum, Geburtsort) VALUES ('"+mitglID+"','"+g.getGeburtsdatum()+"','"+g.getGeburtsort()+"')");
             System.out.println("Datensatz erfolgreich angelegt.");
         } catch (SQLException e) {
             System.err.println("Fehler: " + e.getMessage());
@@ -172,6 +180,11 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
             System.err.println("Fehler: " + e.getMessage());
         }
         return "Fehler 42";
+    }
+
+    @Override
+    public String updateGeburtsdaten(Geburtsdaten g) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
