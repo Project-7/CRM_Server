@@ -17,6 +17,8 @@ public class CRM_Server_Main {
     /**
      * @param args the command line arguments
      */
+    
+    
     public static void main (String args[]){
         try {
             Registry reg = LocateRegistry.createRegistry(1099);
@@ -25,6 +27,7 @@ public class CRM_Server_Main {
         } catch (Exception e) {
             System.err.println("Fehler"+e.getMessage());
         }
+        //eigenen Thread öffnen für updateSemester Methode
     }
     
 }
