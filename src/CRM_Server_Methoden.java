@@ -28,7 +28,7 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
     }
 
     @Override
-    public String insertMitglied(Mitglied m, Geburtsdaten g) throws RemoteException {
+    public String insertMitglied(Mitglied m, Geburtsdaten g, Kontodaten k, Mitgliedsstatus st, Studiuminfo si, Team t) throws RemoteException {
         try {
             CRM_Server_DB_Connection c = new CRM_Server_DB_Connection();
             Connection con = c.getConnection();
@@ -42,6 +42,15 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
                 mitglID = rs.getInt(1);
             }
             stmt.executeUpdate("INSERT INTO Geburtsdaten (GeburtsID, Geburtsdatum, Geburtsort) VALUES ('" + mitglID + "','" + g.getGeburtsdatum() + "','" + g.getGeburtsort() + "')");
+            stmt.executeUpdate("INSERT INTO Kontodaten (kontoID, kreditinstitut, kontonr, blz, iban, bic) VALUES ('" + mitglID + "','" + k.getKreditinstitut() + "','" + k.getKontonr() + "','" + k.getBlz() + "','" + k.getIban() + "','" + k.getBic() + "')");
+            if(st.getAustrittsdatum() == null){
+                stmt.executeUpdate("INSERT INTO Mitgliedsstatus (statusID, mitglied_seit, austrittsdatum, mitgliedsstatus) VALUES ('" + mitglID + "','" + st.getMitglied_seit() + "', null ,'" + st.getMitgliedsstatus() + "')");
+            }
+            else {
+                stmt.executeUpdate("INSERT INTO Mitgliedsstatus (statusID, mitglied_seit, austrittsdatum, mitgliedsstatus) VALUES ('" + mitglID + "','" + st.getMitglied_seit() + "','" + st.getAustrittsdatum() + "','" + st.getMitgliedsstatus() + "')");
+            }
+            stmt.executeUpdate("INSERT INTO Studiuminfo (studID, aktSemester, studiengang) VALUES ('" + mitglID + "','" + si.getAktSemester() + "','" + si.getStudiengang() + "')");
+            stmt.executeUpdate("INSERT INTO mitgliederteam (MitgliederID, Team) VALUES ('" + mitglID + "','" + t.getTeam() + "')");
             System.out.println("Datensatz erfolgreich angelegt.");
         } catch (SQLException e) {
             System.err.println("Fehler: " + e.getMessage());
