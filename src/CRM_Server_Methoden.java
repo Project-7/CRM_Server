@@ -43,10 +43,9 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
             }
             stmt.executeUpdate("INSERT INTO Geburtsdaten (GeburtsID, Geburtsdatum, Geburtsort) VALUES ('" + mitglID + "','" + g.getGeburtsdatum() + "','" + g.getGeburtsort() + "')");
             stmt.executeUpdate("INSERT INTO Kontodaten (kontoID, kreditinstitut, kontonr, blz, iban, bic) VALUES ('" + mitglID + "','" + k.getKreditinstitut() + "','" + k.getKontonr() + "','" + k.getBlz() + "','" + k.getIban() + "','" + k.getBic() + "')");
-            if(st.getAustrittsdatum() == null){
+            if (st.getAustrittsdatum() == null) {
                 stmt.executeUpdate("INSERT INTO Mitgliedsstatus (statusID, mitglied_seit, austrittsdatum, mitgliedsstatus) VALUES ('" + mitglID + "','" + st.getMitglied_seit() + "', null ,'" + st.getMitgliedsstatus() + "')");
-            }
-            else {
+            } else {
                 stmt.executeUpdate("INSERT INTO Mitgliedsstatus (statusID, mitglied_seit, austrittsdatum, mitgliedsstatus) VALUES ('" + mitglID + "','" + st.getMitglied_seit() + "','" + st.getAustrittsdatum() + "','" + st.getMitgliedsstatus() + "')");
             }
             stmt.executeUpdate("INSERT INTO Studiuminfo (studID, aktSemester, studiengang) VALUES ('" + mitglID + "','" + si.getAktSemester() + "','" + si.getStudiengang() + "')");
@@ -76,7 +75,7 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
         try {
             CRM_Server_DB_Connection c = new CRM_Server_DB_Connection();
             Connection con = c.getConnection();
-            ArrayList<Mitglied> mitglieder = new ArrayList<Mitglied>();
+            ArrayList<Mitglied> mitglieder = new ArrayList<>();
 
             //wenn keine Auswahl getroffen wird im Client, werden alle Mitglieder ohne Einschränkung ausgegeben
             if (args.length == 0) {
@@ -104,33 +103,71 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
                     Mitglied m = new Mitglied(mitglID, vorname, name, telefonnr, email, strasse_Hsnr, plz, ort, angemeldet, email_eRacing, fuehrerschein, vermerk, werkstattregeln, serverzugang, staatsangehoerigkeit, foto_vorhanden, Position);
                     mitglieder.add(m);
                 }
+
             }
             //wenn Client EIN Attribut abfrägt
             if (args.length == 2) {
-                String abfrage = "SELECT * FROM Mitglied WHERE " + args[0] + " = '" + args[1] + "';";;
-                PreparedStatement pstmt = con.prepareStatement(abfrage);
-                ResultSet rs = pstmt.executeQuery();
-                while (rs.next()) {
-                    int mitglID = rs.getInt(1);
-                    String vorname = rs.getString(2);
-                    String name = rs.getString(3);
-                    String telefonnr = rs.getString(4);
-                    String email = rs.getString(5);
-                    String strasse_Hsnr = rs.getString(6);
-                    int plz = rs.getInt(7);
-                    String ort = rs.getString(8);
-                    int angemeldet = rs.getInt(9);
-                    String email_eRacing = rs.getString(10);
-                    String fuehrerschein = rs.getString(11);
-                    String vermerk = rs.getString(12);
-                    int werkstattregeln = rs.getInt(13);
-                    int serverzugang = rs.getInt(14);
-                    String staatsangehoerigkeit = rs.getString(15);
-                    int foto_vorhanden = rs.getInt(16);
-                    String Position = rs.getString(17);
-                    Mitglied m = new Mitglied(mitglID, vorname, name, telefonnr, email, strasse_Hsnr, plz, ort, angemeldet, email_eRacing, fuehrerschein, vermerk, werkstattregeln, serverzugang, staatsangehoerigkeit, foto_vorhanden, Position);
-                    mitglieder.add(m);
-                    //SELECT Geburtsdatum FROM Geburtsdaten WHERE mitgliederID = mitglID
+                if ("Team".equals(args[0])) {
+                    String abfrage = "SELECT MitgliederID FROM mitgliederteam WHERE " + args[0] + " = '" + args[1] + "';";
+                    PreparedStatement pstmt = con.prepareStatement(abfrage);
+                    ResultSet rs1 = pstmt.executeQuery();
+                    int mitglID = 0;
+                    while (rs1.next()) {
+                        mitglID = rs1.getInt(1);
+                        abfrage = "SELECT * FROM Mitglied WHERE MitgliederID = '" + mitglID + "';";
+                        pstmt = con.prepareStatement(abfrage);
+                        ResultSet rs2 = pstmt.executeQuery();
+
+                        while (rs2.next()) {
+                            int mitgliedID = rs2.getInt(1);
+                            String vorname = rs2.getString(2);
+                            String name = rs2.getString(3);
+                            String telefonnr = rs2.getString(4);
+                            String email = rs2.getString(5);
+                            String strasse_Hsnr = rs2.getString(6);
+                            int plz = rs2.getInt(7);
+                            String ort = rs2.getString(8);
+                            int angemeldet = rs2.getInt(9);
+                            String email_eRacing = rs2.getString(10);
+                            String fuehrerschein = rs2.getString(11);
+                            String vermerk = rs2.getString(12);
+                            int werkstattregeln = rs2.getInt(13);
+                            int serverzugang = rs2.getInt(14);
+                            String staatsangehoerigkeit = rs2.getString(15);
+                            int foto_vorhanden = rs2.getInt(16);
+                            String Position = rs2.getString(17);
+                            Mitglied m = new Mitglied(mitgliedID, vorname, name, telefonnr, email, strasse_Hsnr, plz, ort, angemeldet, email_eRacing, fuehrerschein, vermerk, werkstattregeln, serverzugang, staatsangehoerigkeit, foto_vorhanden, Position);
+                            mitglieder.add(m);
+                        }
+                    }
+
+                } else {
+
+                    String abfrage = "SELECT * FROM Mitglied WHERE " + args[0] + " = '" + args[1] + "';";
+                    PreparedStatement pstmt = con.prepareStatement(abfrage);
+                    ResultSet rs = pstmt.executeQuery();
+
+                    while (rs.next()) {
+                        int mitglID = rs.getInt(1);
+                        String vorname = rs.getString(2);
+                        String name = rs.getString(3);
+                        String telefonnr = rs.getString(4);
+                        String email = rs.getString(5);
+                        String strasse_Hsnr = rs.getString(6);
+                        int plz = rs.getInt(7);
+                        String ort = rs.getString(8);
+                        int angemeldet = rs.getInt(9);
+                        String email_eRacing = rs.getString(10);
+                        String fuehrerschein = rs.getString(11);
+                        String vermerk = rs.getString(12);
+                        int werkstattregeln = rs.getInt(13);
+                        int serverzugang = rs.getInt(14);
+                        String staatsangehoerigkeit = rs.getString(15);
+                        int foto_vorhanden = rs.getInt(16);
+                        String Position = rs.getString(17);
+                        Mitglied m = new Mitglied(mitglID, vorname, name, telefonnr, email, strasse_Hsnr, plz, ort, angemeldet, email_eRacing, fuehrerschein, vermerk, werkstattregeln, serverzugang, staatsangehoerigkeit, foto_vorhanden, Position);
+                        mitglieder.add(m);
+                    }
                 }
             }
             System.out.println("Abfrage ausgeführt");
@@ -146,6 +183,123 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
         } catch (SQLException e) {
             System.err.println("Fehler: " + e.getMessage());
         }
+        return null;
+    }
+
+    @Override
+    public ArrayList<Geburtsdaten> selectGeburtsdaten(String... args) throws RemoteException {
+        try {
+            CRM_Server_DB_Connection c = new CRM_Server_DB_Connection();
+            Connection con = c.getConnection();
+            ArrayList<Geburtsdaten> geburtsdaten = new ArrayList<>();
+
+            String abfrage = "SELECT * FROM Geburtsdaten WHERE " + args[0] + " = '" + args[1] + "';";
+            PreparedStatement pstmt = con.prepareStatement(abfrage);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                int geburtsID = rs.getInt(1);
+                String geburtsdatum = rs.getString(2);
+                String geburtsort = rs.getString(3);
+                Geburtsdaten g = new Geburtsdaten(geburtsID, geburtsdatum, geburtsort);
+                geburtsdaten.add(g);
+            }
+
+            System.out.println("Abfrage ausgeführt");
+            return geburtsdaten;
+        } catch (SQLException e) {
+            System.err.println("Fehler: " + e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public ArrayList<Kontodaten> selectKontodaten(String... args) throws RemoteException {
+        try {
+            CRM_Server_DB_Connection c = new CRM_Server_DB_Connection();
+            Connection con = c.getConnection();
+            ArrayList<Kontodaten> kontodaten = new ArrayList<>();
+
+            String abfrage = "SELECT * FROM Kontodaten WHERE " + args[0] + " = '" + args[1] + "';";
+            PreparedStatement pstmt = con.prepareStatement(abfrage);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                int kontoID = rs.getInt(1);
+                String kreditinstitut = rs.getString(2);
+                int kontonr = rs.getInt(3);
+                int blz = rs.getInt(4);
+                String iban = rs.getString(5);
+                String bic = rs.getString(6);
+                Kontodaten k = new Kontodaten(kontoID, kreditinstitut, kontonr, blz, iban, bic);
+                kontodaten.add(k);
+            }
+
+            System.out.println("Abfrage ausgeführt");
+            return kontodaten;
+
+        } catch (SQLException e) {
+            System.err.println("Fehler: " + e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public ArrayList<Mitgliedsstatus> selectMitgliedsstatus(String... args) throws RemoteException {
+        try {
+            CRM_Server_DB_Connection c = new CRM_Server_DB_Connection();
+            Connection con = c.getConnection();
+            ArrayList<Mitgliedsstatus> mitgliedsstatus = new ArrayList<>();
+
+            String abfrage = "SELECT * FROM Mitgliedsstatus WHERE " + args[0] + " = '" + args[1] + "';";
+            PreparedStatement pstmt = con.prepareStatement(abfrage);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                int statusID = rs.getInt(1);
+                String mitglied_seit = rs.getString(2);
+                String austrittsdatum = rs.getString(3);
+                String mitgliedsStatus = rs.getString(4);
+
+                Mitgliedsstatus st = new Mitgliedsstatus(statusID, mitglied_seit, austrittsdatum, mitgliedsStatus);
+                mitgliedsstatus.add(st);
+            }
+
+            System.out.println("Abfrage ausgeführt");
+            return mitgliedsstatus;
+
+        } catch (SQLException e) {
+            System.err.println("Fehler: " + e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public ArrayList<Studiuminfo> selectStudiuminfo(String... args) throws RemoteException {
+        try {
+            CRM_Server_DB_Connection c = new CRM_Server_DB_Connection();
+            Connection con = c.getConnection();
+            ArrayList<Studiuminfo> studiuminfo = new ArrayList<>();
+
+            String abfrage = "SELECT * FROM Studiuminfo WHERE " + args[0] + " = '" + args[1] + "';";
+            PreparedStatement pstmt = con.prepareStatement(abfrage);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                int studID = rs.getInt(1);
+                int aktSemester = rs.getInt(2);
+                String studiengang = rs.getString(3);
+                Studiuminfo si = new Studiuminfo(studID, aktSemester, studiengang);
+                studiuminfo.add(si);
+            }
+
+            System.out.println("Abfrage ausgeführt");
+            return studiuminfo;
+
+        } catch (SQLException e) {
+            System.err.println("Fehler: " + e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public ArrayList<Team> selectTeam(String... args) throws RemoteException {
         return null;
     }
 
@@ -198,6 +352,7 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
     public String updateGeburtsdaten(Geburtsdaten g) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
     //
     @Override
     public void updateSemester() throws RemoteException {
@@ -206,13 +361,13 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
             Connection con = c.getConnection();
             String updateSem = "UPDATE LAeRacing.studiuminfo SET aktSemester=aktSemester+1;";
             Date d = new Date(System.currentTimeMillis());
-            if ("15.3".equals(d.getDate() + "." + (d.getMonth()+1)) || "1.10".equals(d.getDate() + "." + (d.getMonth()+1))) {
+            if ("15.3".equals(d.getDate() + "." + (d.getMonth() + 1)) || "1.10".equals(d.getDate() + "." + (d.getMonth() + 1))) {
                 Statement stmt = con.createStatement();
                 stmt.executeUpdate(updateSem);
             }
         } catch (SQLException e) {
-            System.err.println("Etwas hat nicht funktioniert. Fehler: "+e);
+            System.err.println("Etwas hat nicht funktioniert. Fehler: " + e);
         }
     }
-    
+
 }
