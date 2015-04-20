@@ -320,6 +320,86 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
     }
 
     @Override
+    public String updateGeburtsdaten(Geburtsdaten g) throws RemoteException {
+        try {
+            CRM_Server_DB_Connection c = new CRM_Server_DB_Connection();
+            Connection con = c.getConnection();
+
+            Statement stmt = con.createStatement();
+            stmt.executeUpdate("UPDATE laeracing.geburtsdaten SET geburtsdatum = '" + g.getGeburtsdatum() + "',  geburtsort= '" + g.getGeburtsort() + "' WHERE GeburtsID=" + g.getGeburtsID() + ";");   
+            return "Geburtsdaten erfolgreich aktualisiert!";
+
+        } catch (SQLException e) {
+            System.err.println("Fehler: " + e.getMessage());
+        }
+        return "Fehler 42.1";
+    }
+    
+    @Override
+    public String updateKontodaten(Kontodaten k) throws RemoteException {
+        try {
+            CRM_Server_DB_Connection c = new CRM_Server_DB_Connection();
+            Connection con = c.getConnection();
+
+            Statement stmt = con.createStatement();
+            stmt.executeUpdate("UPDATE laeracing.kontodaten SET kreditinstitut= '" + k.getKreditinstitut() + "',  kontonr= '" + k.getKontonr() + "', blz= '" + k.getBlz() + "', iban= '" + k.getIban() + "', bic= '" + k.getBic()+ "' WHERE KontoID=" + k.getKontoID() + ";");   
+            return "Kontodaten erfolgreich aktualisiert!";
+
+        } catch (SQLException e) {
+            System.err.println("Fehler: " + e.getMessage());
+        }
+        return "Fehler 42.2";
+    }
+
+    @Override
+    public String updateMitgliedsstatus(Mitgliedsstatus st) throws RemoteException {
+        try {
+            CRM_Server_DB_Connection c = new CRM_Server_DB_Connection();
+            Connection con = c.getConnection();
+
+            Statement stmt = con.createStatement();
+            stmt.executeUpdate("UPDATE laeracing.geburtsdaten SET mitglied_seit = '" + st.getMitglied_seit() + "',  austrittsdatum = '" + st.getAustrittsdatum() + "', mitgliedsstatus = '" + st.getMitgliedsstatus() + "',WHERE StatusID=" + st.getStatusID() + ";");   
+            return "Mitgliedsstatus erfolgreich aktualisiert!";
+
+        } catch (SQLException e) {
+            System.err.println("Fehler: " + e.getMessage());
+        }
+        return "Fehler 42.3";
+    }
+
+    @Override
+    public String updateStudiuminfo(Studiuminfo si) throws RemoteException {
+        try {
+            CRM_Server_DB_Connection c = new CRM_Server_DB_Connection();
+            Connection con = c.getConnection();
+
+            Statement stmt = con.createStatement();
+            stmt.executeUpdate("UPDATE laeracing.geburtsdaten SET aktSemester = '" + si.getAktSemester() + "',  studiengang = '" + si.getStudiengang() + "' WHERE StudID=" + si.getStudID() + ";");   
+            return "Studiuminfo erfolgreich aktualisiert!";
+
+        } catch (SQLException e) {
+            System.err.println("Fehler: " + e.getMessage());
+        }
+        return "Fehler 42.4";
+    }
+
+    @Override
+    public String updateTeam(Team t, int ID) throws RemoteException {
+        try {
+            CRM_Server_DB_Connection c = new CRM_Server_DB_Connection();
+            Connection con = c.getConnection();
+
+            Statement stmt = con.createStatement();
+            stmt.executeUpdate("UPDATE laeracing.mitgliederteam SET team = '" + t.getTeam() + "' WHERE MitgliederID=" + ID + ";");   
+            return "Team erfolgreich aktualisiert!";
+
+        } catch (SQLException e) {
+            System.err.println("Fehler: " + e.getMessage());
+        }
+        return "Fehler 42.5";
+    }
+    
+    @Override
     public String deleteMitglied(int mID) throws RemoteException {
         try {
             CRM_Server_DB_Connection c = new CRM_Server_DB_Connection();
@@ -337,6 +417,14 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
                 System.out.println("Datensatz erfolgreich gelöscht.");
                 stmt.executeUpdate("UPDATE Mitgliedsstatus SET austrittsdatum = CURRENT_DATE , mitgliedsstatus = 'ausgetreten' WHERE statusID=" + mID + ";");
                 System.out.println("Der Mitgliedsstatus wurde erfolgreich aktualisiert.");
+                stmt.executeUpdate("UPDATE Geburtsdaten SET geburtsdatum = null, geburtsort = null WHERE GeburtsID=" + mID + ";");
+                System.out.println("Die Geburtsdaten wurden erfolgreich gelöscht.");
+                stmt.executeUpdate("UPDATE Kontodaten SET kreditinstitut = null , kontonr = null, blz = null, iban = null, bic = null WHERE KontoID=" + mID + ";");
+                System.out.println("Die Kontodaten wurden erfolgreich gelöscht.");
+                stmt.executeUpdate("UPDATE Studiuminfo SET aktSemester = null, studiengang = null WHERE StudID=" + mID + ";");
+                System.out.println("Studiuminfo wurde erfolgreich gelöscht.");
+                stmt.executeUpdate("UPDATE Mitgliederteam SET team = null WHERE MitgliederID=" + mID + ";");
+                System.out.println("Das Mitgliederteam wurde erfolgreich gelöscht.");
                 return "Mitglied erfolgreich gelöscht und Mitgliedsstatus aktualisiert!";
             } else {
                 return "Das Mitglied mit der ID " + mID + " existiert nicht!";
@@ -345,15 +433,9 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
         } catch (SQLException e) {
             System.err.println("Fehler: " + e.getMessage());
         }
-        return "Fehler 42";
+        return "Fehler 43.0";
     }
 
-    @Override
-    public String updateGeburtsdaten(Geburtsdaten g) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    //
     @Override
     public void updateSemester() throws RemoteException {
         try {
@@ -369,5 +451,4 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
             System.err.println("Etwas hat nicht funktioniert. Fehler: " + e);
         }
     }
-
 }
