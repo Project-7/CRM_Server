@@ -12,14 +12,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 /**
  *
- * @author MarkusH
+ * @author MarkusH und RobertK
+ * @version 1.0
  */
 public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Interface {
 
