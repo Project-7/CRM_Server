@@ -358,7 +358,11 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
             Connection con = c.getConnection();
 
             Statement stmt = con.createStatement();
-            stmt.executeUpdate("UPDATE laeracing.geburtsdaten SET mitglied_seit = '" + st.getMitglied_seit() + "',  austrittsdatum = '" + st.getAustrittsdatum() + "', mitgliedsstatus = '" + st.getMitgliedsstatus() + "',WHERE StatusID=" + st.getStatusID() + ";");   
+            if (st.getAustrittsdatum() == null) {
+                stmt.executeUpdate("UPDATE laeracing.mitgliedsstatus SET mitglied_seit= '" + st.getMitglied_seit() + "',  austrittsdatum= null, mitgliedsstatus= '" + st.getMitgliedsstatus() + "'WHERE statusID=" + st.getStatusID() + ";"); 
+            } else {
+                stmt.executeUpdate("UPDATE laeracing.mitgliedsstatus SET mitglied_seit= '" + st.getMitglied_seit() + "',  austrittsdatum= '" + st.getAustrittsdatum() + "', mitgliedsstatus= '" + st.getMitgliedsstatus() + "'WHERE statusID=" + st.getStatusID() + ";"); 
+            } 
             return "Mitgliedsstatus erfolgreich aktualisiert!";
 
         } catch (SQLException e) {
@@ -374,7 +378,7 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
             Connection con = c.getConnection();
 
             Statement stmt = con.createStatement();
-            stmt.executeUpdate("UPDATE laeracing.geburtsdaten SET aktSemester = '" + si.getAktSemester() + "',  studiengang = '" + si.getStudiengang() + "' WHERE StudID=" + si.getStudID() + ";");   
+            stmt.executeUpdate("UPDATE laeracing.studiuminfo SET aktSemester = '" + si.getAktSemester() + "',  studiengang = '" + si.getStudiengang() + "' WHERE StudID=" + si.getStudID() + ";");   
             return "Studiuminfo erfolgreich aktualisiert!";
 
         } catch (SQLException e) {
@@ -405,7 +409,7 @@ public class CRM_Server_Methoden extends UnicastRemoteObject implements CRM_Inte
             CRM_Server_DB_Connection c = new CRM_Server_DB_Connection();
             Connection con = c.getConnection();
             int mitglID = 0;
-            String abfrage = "SELECT MAX(MitgliederID) FROM Mitglied;";
+            String abfrage = "SELECT MAX(MitgliederID) FROM laeracing.Mitglied;";
             PreparedStatement pstmt = con.prepareStatement(abfrage);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
